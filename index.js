@@ -1,3 +1,5 @@
+var TIME_LIMIT = 60000;
+
 // Copyright (c) 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -70,6 +72,9 @@
         } else {
             this.loadImages();
         }
+
+        this.maxGameTime = this.config.MAX_GAME_TIME;
+        this.currentSpeedIndex = this.config.CURRENT_SPEED_INDEX
     }
     window['Runner'] = Runner;
 
@@ -79,6 +84,7 @@
      * @const
      */
     var DEFAULT_WIDTH = 600;
+    var DEFAULT_HEIGHT = 150;
 
     /**
      * Frames per second.
@@ -103,7 +109,7 @@
      * @enum {number}
      */
     Runner.config = {
-        ACCELERATION: 0.001,
+        ACCELERATION: 0.01,
         BG_CLOUD_SPEED: 0.2,
         BOTTOM_PAD: 10,
         CLEAR_TIME: 3000,
@@ -118,12 +124,16 @@
         MAX_CLOUDS: 6,
         MAX_OBSTACLE_LENGTH: 3,
         MAX_OBSTACLE_DUPLICATION: 2,
-        MAX_SPEED: 13,
+        MAX_SPEED: [10, 13, 15],
         MIN_JUMP_HEIGHT: 35,
         MOBILE_SPEED_COEFFICIENT: 1.2,
         RESOURCE_TEMPLATE_ID: 'audio-resources',
         SPEED: 6,
-        SPEED_DROP_COEFFICIENT: 3
+        SPEED_DROP_COEFFICIENT: 3,
+        MAX_GAME_TIME: 60000,
+        SPEED_INCREMENT_INTERVAL: [10000, 20000, 30000],
+        CURRENT_SPEED_INDEX: 0,
+        MAX_SPEED_INTERVALS: 3
     };
 
 
@@ -133,7 +143,7 @@
      */
     Runner.defaultDimensions = {
         WIDTH: DEFAULT_WIDTH,
-        HEIGHT: 150
+        HEIGHT: DEFAULT_HEIGHT
     };
 
 
@@ -467,9 +477,9 @@
                     'from { width:' + Trex.config.WIDTH + 'px }' +
                     'to { width: ' + this.dimensions.WIDTH + 'px }' +
                     '}';
-                
-                // create a style sheet to put the keyframe rule in 
-                // and then place the style sheet in the html head    
+
+                // create a style sheet to put the keyframe rule in
+                // and then place the style sheet in the html head
                 var sheet = document.createElement('style');
                 sheet.innerHTML = keyframes;
                 document.head.appendChild(sheet);
@@ -500,6 +510,8 @@
             this.tRex.playingIntro = false;
             this.containerEl.style.webkitAnimation = '';
             this.playCount++;
+            this.maxGameTime = this.config.MAX_GAME_TIME;
+            this.currentSpeedIndex = this.config.CURRENT_SPEED_INDEX
 
             // Handle tabbing off the page. Pause the current game.
             document.addEventListener(Runner.events.VISIBILITY,
@@ -558,9 +570,12 @@
                 if (!collision) {
                     this.distanceRan += this.currentSpeed * deltaTime / this.msPerFrame;
 
-                    if (this.currentSpeed < this.config.MAX_SPEED) {
+                    if (this.currentSpeed < this.config.MAX_SPEED[this.currentSpeedIndex]) {
                         this.currentSpeed += this.config.ACCELERATION;
                     }
+
+                    if (this.runningTime > this.config.SPEED_INCREMENT_INTERVAL[this.currentSpeedIndex]  && this.currentSpeedIndex < this.config.MAX_SPEED_INTERVALS )
+                        this.currentSpeedIndex++
                 } else {
                     this.gameOver();
                 }
@@ -593,6 +608,10 @@
                         }
                     }
                 }
+
+                console.log("currentSpeed: ", this.currentSpeed);
+                if (this.runningTime >= this.maxGameTime)
+                    this.gameOver();
             }
 
             if (this.playing || (!this.activated &&
@@ -2706,7 +2725,6 @@
         }
     };
 })();
-
 
 function onDocumentLoad() {
     new Runner('.interstitial-wrapper');
