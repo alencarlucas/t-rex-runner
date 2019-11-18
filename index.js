@@ -124,7 +124,7 @@ var TIME_LIMIT = 60000;
         MAX_CLOUDS: 6,
         MAX_OBSTACLE_LENGTH: 3,
         MAX_OBSTACLE_DUPLICATION: 2,
-        MAX_SPEED: [10, 13, 15],
+        MAX_SPEED: [9, 11, 13],
         MIN_JUMP_HEIGHT: 35,
         MOBILE_SPEED_COEFFICIENT: 1.2,
         RESOURCE_TEMPLATE_ID: 'audio-resources',
@@ -511,7 +511,8 @@ var TIME_LIMIT = 60000;
             this.containerEl.style.webkitAnimation = '';
             this.playCount++;
             this.maxGameTime = this.config.MAX_GAME_TIME;
-            this.currentSpeedIndex = this.config.CURRENT_SPEED_INDEX
+            this.currentSpeedIndex = 0;
+            
 
             // Handle tabbing off the page. Pause the current game.
             document.addEventListener(Runner.events.VISIBILITY,
@@ -609,7 +610,6 @@ var TIME_LIMIT = 60000;
                     }
                 }
 
-                console.log("currentSpeed: ", this.currentSpeed);
                 if (this.runningTime >= this.maxGameTime)
                     this.gameOver();
             }
@@ -851,6 +851,9 @@ var TIME_LIMIT = 60000;
                 this.playSound(this.soundFx.BUTTON_PRESS);
                 this.invert(true);
                 this.update();
+                this.maxGameTime = this.config.MAX_GAME_TIME;
+                this.currentSpeedIndex = 0;
+
             }
         },
 
