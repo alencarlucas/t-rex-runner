@@ -84,7 +84,7 @@ var TIME_LIMIT = 60000;
      * @const
      */
     var DEFAULT_WIDTH = 600;
-    var DEFAULT_HEIGHT = 150;
+    var DEFAULT_HEIGHT = 300;
 
     /**
      * Frames per second.
@@ -113,7 +113,7 @@ var TIME_LIMIT = 60000;
         BG_CLOUD_SPEED: 0.2,
         BOTTOM_PAD: 10,
         CLEAR_TIME: 3000,
-        CLOUD_FREQUENCY: 0.5,
+        CLOUD_FREQUENCY: 2,
         GAMEOVER_CLEAR_TIME: 750,
         GAP_COEFFICIENT: 0.6,
         GRAVITY: 0.6,
@@ -131,7 +131,7 @@ var TIME_LIMIT = 60000;
         SPEED: 6,
         SPEED_DROP_COEFFICIENT: 3,
         MAX_GAME_TIME: 60000,
-        SPEED_INCREMENT_INTERVAL: [10000, 20000, 30000],
+        SPEED_INCREMENT_INTERVAL: [20000, 20000, 20000],
         CURRENT_SPEED_INDEX: 0,
         MAX_SPEED_INTERVALS: 3
     };
@@ -611,7 +611,7 @@ var TIME_LIMIT = 60000;
                 }
 
                 if (this.runningTime >= this.maxGameTime)
-                    this.gameOver();
+                    this.gameWin();
             }
 
             if (this.playing || (!this.activated &&
@@ -805,6 +805,35 @@ var TIME_LIMIT = 60000;
                     this.dimensions);
             } else {
                 this.gameOverPanel.draw();
+            }
+
+            // Update the high score.
+            if (this.distanceRan > this.highestScore) {
+                this.highestScore = Math.ceil(this.distanceRan);
+                this.distanceMeter.setHighScore(this.highestScore);
+            }
+
+            // Reset the time clock.
+            this.time = getTimeStamp();
+        },
+
+        gameWin: function () {
+            this.playSound(this.soundFx.HIT);
+            vibrate(200);
+
+            this.stop();
+            this.crashed = true;
+            this.distanceMeter.acheivement = false;
+
+            this.tRex.update(100, Trex.status.WINNER);
+
+            // Game over panel.
+            if (!this.gameOverPanel) {
+                this.gameOverPanel = new GameOverPanel(this.canvas,
+                    this.spriteDef.TEXT_SPRITE, this.spriteDef.RESTART,
+                    this.dimensions);
+            } else {
+                this.gameOverPanel.draw(); 
             }
 
             // Update the high score.
@@ -1272,7 +1301,7 @@ var TIME_LIMIT = 60000;
         this.dimensions = dimensions;
         this.remove = false;
         this.xPos = dimensions.WIDTH + (opt_xOffset || 0);
-        this.yPos = 0;
+        this.yPos = 0 ;
         this.width = 0;
         this.collisionBoxes = [];
         this.gap = 0;
@@ -1455,7 +1484,7 @@ var TIME_LIMIT = 60000;
             type: 'CACTUS_SMALL',
             width: 17,
             height: 35,
-            yPos: 105,
+            yPos: 215,
             multipleSpeed: 4,
             minGap: 120,
             minSpeed: 0,
@@ -1469,7 +1498,7 @@ var TIME_LIMIT = 60000;
             type: 'CACTUS_LARGE',
             width: 25,
             height: 50,
-            yPos: 90,
+            yPos: 200,
             multipleSpeed: 7,
             minGap: 120,
             minSpeed: 0,
@@ -1483,7 +1512,7 @@ var TIME_LIMIT = 60000;
             type: 'PTERODACTYL',
             width: 46,
             height: 40,
-            yPos: [100, 75, 50], // Variable height.
+            yPos: [210, 185, 160], // Variable height.
             yPosMobile: [100, 50], // Variable height mobile.
             multipleSpeed: 999,
             minSpeed: 8.5,
@@ -1550,7 +1579,7 @@ var TIME_LIMIT = 60000;
         HEIGHT: 47,
         HEIGHT_DUCK: 25,
         INIITAL_JUMP_VELOCITY: -10,
-        INTRO_DURATION: 1500,
+        INTRO_DURATION: 150,
         MAX_JUMP_HEIGHT: 30,
         MIN_JUMP_HEIGHT: 30,
         SPEED_DROP_COEFFICIENT: 3,
@@ -1586,6 +1615,7 @@ var TIME_LIMIT = 60000;
      */
     Trex.status = {
         CRASHED: 'CRASHED',
+        WINNER: 'WINNER',
         DUCKING: 'DUCKING',
         JUMPING: 'JUMPING',
         RUNNING: 'RUNNING',
@@ -1616,6 +1646,10 @@ var TIME_LIMIT = 60000;
             frames: [220],
             msPerFrame: 1000 / 60
         },
+        WINNER: {
+            frames: [176],
+            msPerFrame: 1000 / 60
+        },
         JUMPING: {
             frames: [0],
             msPerFrame: 1000 / 60
@@ -1634,7 +1668,7 @@ var TIME_LIMIT = 60000;
          */
         init: function () {
             this.groundYPos = Runner.defaultDimensions.HEIGHT - this.config.HEIGHT -
-                Runner.config.BOTTOM_PAD;
+                Runner.config.BOTTOM_PAD - 40; //Posição em Y cabra
             this.yPos = this.groundYPos;
             this.minJumpHeight = this.groundYPos - this.config.MIN_JUMP_HEIGHT;
 
@@ -2157,10 +2191,10 @@ var TIME_LIMIT = 60000;
      */
     Cloud.config = {
         HEIGHT: 14,
-        MAX_CLOUD_GAP: 400,
-        MAX_SKY_LEVEL: 30,
-        MIN_CLOUD_GAP: 100,
-        MIN_SKY_LEVEL: 71,
+        MAX_CLOUD_GAP: 150,
+        MAX_SKY_LEVEL: 10,
+        MIN_CLOUD_GAP: 50,
+        MIN_SKY_LEVEL: 51,
         WIDTH: 46
     };
 
@@ -2411,8 +2445,8 @@ var TIME_LIMIT = 60000;
      */
     HorizonLine.dimensions = {
         WIDTH: 600,
-        HEIGHT: 12,
-        YPOS: 127
+        HEIGHT: 300,
+        YPOS: 0
     };
 
 
