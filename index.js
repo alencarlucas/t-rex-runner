@@ -90,7 +90,7 @@ var TIME_LIMIT = 60000;
      * Frames per second.
      * @const
      */
-    var FPS = 60;
+    var FPS = 30;
 
     /** @const */
     var IS_HIDPI = window.devicePixelRatio > 1;
@@ -124,7 +124,7 @@ var TIME_LIMIT = 60000;
         MAX_CLOUDS: 6,
         MAX_OBSTACLE_LENGTH: 3,
         MAX_OBSTACLE_DUPLICATION: 2,
-        MAX_SPEED: [9, 11, 13],
+        MAX_SPEED: [11, 13, 15],
         MIN_JUMP_HEIGHT: 35,
         MOBILE_SPEED_COEFFICIENT: 1.2,
         RESOURCE_TEMPLATE_ID: 'audio-resources',
