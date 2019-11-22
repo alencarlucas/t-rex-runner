@@ -397,6 +397,9 @@ var TIME_LIMIT = 60000;
             this.startListening();
             this.update();
 
+            this.gameOver()
+            this.restart();
+
             window.addEventListener(Runner.events.RESIZE,
                 this.debounceResize.bind(this));
         },
