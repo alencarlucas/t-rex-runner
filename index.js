@@ -1,4 +1,4 @@
-var TIME_LIMIT = 60000;
+CONT = 0;
 
 // Copyright (c) 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
@@ -41,6 +41,7 @@ var TIME_LIMIT = 60000;
 
         this.time = 0;
         this.runningTime = 0;
+        CONT = 0
         this.msPerFrame = 1000 / FPS;
         this.currentSpeed = this.config.SPEED;
 
@@ -117,14 +118,14 @@ var TIME_LIMIT = 60000;
         GAMEOVER_CLEAR_TIME: 750,
         GAP_COEFFICIENT: 0.6,
         GRAVITY: 0.6,
-        INITIAL_JUMP_VELOCITY: 12,
-        INVERT_FADE_DURATION: 12000,
-        INVERT_DISTANCE: 700,
+        INITIAL_JUMP_VELOCITY: 20,
+        INVERT_FADE_DURATION: 8000,
+        INVERT_DISTANCE: 45,
         MAX_BLINK_COUNT: 3,
         MAX_CLOUDS: 6,
         MAX_OBSTACLE_LENGTH: 3,
         MAX_OBSTACLE_DUPLICATION: 2,
-        MAX_SPEED: [11, 13, 15],
+        MAX_SPEED: [12, 14, 16],
         MIN_JUMP_HEIGHT: 35,
         MOBILE_SPEED_COEFFICIENT: 1.2,
         RESOURCE_TEMPLATE_ID: 'audio-resources',
@@ -184,8 +185,8 @@ var TIME_LIMIT = 60000;
             CACTUS_LARGE: { x: 652, y: 2 },
             CACTUS_SMALL: { x: 446, y: 2 },
             CLOUD: { x: 166, y: 2 },
-            HORIZON: { x: 2, y: 104 },
-            MOON: { x: 954, y: 2 },
+            HORIZON: { x: 0, y: 210 },
+            MOON: { x: 2400, y: 2 },
             PTERODACTYL: { x: 260, y: 2 },
             RESTART: { x: 2, y: 2 },
             TEXT_SPRITE: { x: 1294, y: 2 },
@@ -509,6 +510,7 @@ var TIME_LIMIT = 60000;
          */
         startGame: function () {
             this.runningTime = 0;
+            CONT = 0
             this.playingIntro = false;
             this.tRex.playingIntro = false;
             this.containerEl.style.webkitAnimation = '';
@@ -831,12 +833,12 @@ var TIME_LIMIT = 60000;
             this.tRex.update(100, Trex.status.WINNER);
 
             // Game over panel.
-            if (!this.gameOverPanel) {
-                this.gameOverPanel = new GameOverPanel(this.canvas,
+            if (!this.gameWinPanel) {
+                this.gameWinPanel = new GameWinPanel(this.canvas,
                     this.spriteDef.TEXT_SPRITE, this.spriteDef.RESTART,
                     this.dimensions);
             } else {
-                this.gameOverPanel.draw(); 
+                this.gameWinPanel.draw(); 
             }
 
             // Update the high score.
@@ -870,6 +872,7 @@ var TIME_LIMIT = 60000;
             if (!this.raqId) {
                 this.playCount++;
                 this.runningTime = 0;
+                CONT = 0
                 this.playing = true;
                 this.crashed = false;
                 this.distanceRan = 0;
@@ -1075,7 +1078,7 @@ var TIME_LIMIT = 60000;
         TEXT_X: 0,
         TEXT_Y: 13,
         TEXT_WIDTH: 191,
-        TEXT_HEIGHT: 11,
+        TEXT_HEIGHT: 50,
         RESTART_WIDTH: 36,
         RESTART_HEIGHT: 32
     };
@@ -1099,6 +1102,105 @@ var TIME_LIMIT = 60000;
          */
         draw: function () {
             var dimensions = GameOverPanel.dimensions;
+
+            var centerX = this.canvasDimensions.WIDTH / 2;
+
+            // Game over text.
+            var textSourceX = dimensions.TEXT_X;
+            var textSourceY = dimensions.TEXT_Y;
+            var textSourceWidth = dimensions.TEXT_WIDTH;
+            var textSourceHeight = dimensions.TEXT_HEIGHT;
+
+            var textTargetX = Math.round(centerX - (dimensions.TEXT_WIDTH / 2));
+            var textTargetY = Math.round((this.canvasDimensions.HEIGHT - 25) / 3);
+            var textTargetWidth = dimensions.TEXT_WIDTH;
+            var textTargetHeight = dimensions.TEXT_HEIGHT;
+
+            var restartSourceWidth = dimensions.RESTART_WIDTH;
+            var restartSourceHeight = dimensions.RESTART_HEIGHT;
+            var restartTargetX = centerX - (dimensions.RESTART_WIDTH / 2);
+            var restartTargetY = this.canvasDimensions.HEIGHT / 2;
+
+            if (IS_HIDPI) {
+                textSourceY *= 2;
+                textSourceX *= 2;
+                textSourceWidth *= 2;
+                textSourceHeight *= 2;
+                restartSourceWidth *= 2;
+                restartSourceHeight *= 2;
+            }
+
+            textSourceX += this.textImgPos.x;
+            textSourceY += this.textImgPos.y;
+
+            // Game over text from sprite.
+            this.canvasCtx.drawImage(Runner.imageSprite,
+                textSourceX, textSourceY, textSourceWidth, textSourceHeight,
+                textTargetX, textTargetY, textTargetWidth, textTargetHeight);
+
+            // Restart button.
+            this.canvasCtx.drawImage(Runner.imageSprite,
+                this.restartImgPos.x, this.restartImgPos.y,
+                restartSourceWidth, restartSourceHeight,
+                restartTargetX, restartTargetY, dimensions.RESTART_WIDTH,
+                dimensions.RESTART_HEIGHT);
+        }
+    };
+
+
+    //******************************************************************************
+
+
+    /**
+     * Game win panel.
+     * @param {!HTMLCanvasElement} canvas
+     * @param {Object} textImgPos
+     * @param {Object} restartImgPos
+     * @param {!Object} dimensions Canvas dimensions.
+     * @constructor
+     */
+    function GameWinPanel(canvas, textImgPos, restartImgPos, dimensions) {
+        this.canvas = canvas;
+        this.canvasCtx = canvas.getContext('2d');
+        this.canvasDimensions = dimensions;
+        this.textImgPos = textImgPos;
+        this.restartImgPos = restartImgPos;
+        this.draw();
+    };
+
+
+    /**
+     * Dimensions used in the panel.
+     * @enum {number}
+     */
+    GameWinPanel.dimensions = {
+        TEXT_X: 0,
+        TEXT_Y: 65,
+        TEXT_WIDTH: 191,
+        TEXT_HEIGHT: 38,
+        RESTART_WIDTH: 36,
+        RESTART_HEIGHT: 32
+    };
+
+
+    GameWinPanel.prototype = {
+        /**
+         * Update the panel dimensions.
+         * @param {number} width New canvas width.
+         * @param {number} opt_height Optional new canvas height.
+         */
+        updateDimensions: function (width, opt_height) {
+            this.canvasDimensions.WIDTH = width;
+            if (opt_height) {
+                this.canvasDimensions.HEIGHT = opt_height;
+            }
+        },
+
+        /**
+         * Draw the panel.
+         */
+        draw: function () {
+            var dimensions = GameWinPanel.dimensions;
 
             var centerX = this.canvasDimensions.WIDTH / 2;
 
@@ -2270,7 +2372,7 @@ var TIME_LIMIT = 60000;
         this.canvas = canvas;
         this.canvasCtx = canvas.getContext('2d');
         this.xPos = containerWidth - 50;
-        this.yPos = 30;
+        this.yPos = 70;
         this.currentPhase = 0;
         this.opacity = 0;
         this.containerWidth = containerWidth;
@@ -2285,15 +2387,15 @@ var TIME_LIMIT = 60000;
     NightMode.config = {
         FADE_SPEED: 0.035,
         HEIGHT: 40,
-        MOON_SPEED: 0.25,
+        MOON_SPEED: 1,
         NUM_STARS: 2,
         STAR_SIZE: 9,
         STAR_SPEED: 0.3,
         STAR_MAX_Y: 70,
-        WIDTH: 20
+        WIDTH: 60
     };
 
-    NightMode.phases = [140, 120, 100, 60, 40, 20, 0];
+    NightMode.phases = [480, 0, 120, 240, 360];
 
     NightMode.prototype = {
         /**
@@ -2320,7 +2422,8 @@ var TIME_LIMIT = 60000;
 
             // Set moon positioning.
             if (this.opacity > 0) {
-                this.xPos = this.updateXPos(this.xPos, NightMode.config.MOON_SPEED);
+                //this.xPos = this.updateXPos(this.xPos, NightMode.config.MOON_SPEED);
+                this.xPos = NightMode.config.WIDTH
 
                 // Update stars.
                 if (this.drawStars) {
@@ -2347,7 +2450,7 @@ var TIME_LIMIT = 60000;
         },
 
         draw: function () {
-            var moonSourceWidth = this.currentPhase == 3 ? NightMode.config.WIDTH * 2 :
+            var moonSourceWidth = this.currentPhase == 3 ? NightMode.config.WIDTH:
                 NightMode.config.WIDTH;
             var moonSourceHeight = NightMode.config.HEIGHT;
             var moonSourceX = this.spritePos.x + NightMode.phases[this.currentPhase];
@@ -2359,7 +2462,7 @@ var TIME_LIMIT = 60000;
                 moonSourceWidth *= 2;
                 moonSourceHeight *= 2;
                 moonSourceX = this.spritePos.x +
-                    (NightMode.phases[this.currentPhase] * 2);
+                    (NightMode.phases[this.currentPhase]);
                 starSize *= 2;
                 starSourceX = Runner.spriteDefinition.HDPI.STAR.x;
             }
@@ -2447,7 +2550,7 @@ var TIME_LIMIT = 60000;
      * @enum {number}
      */
     HorizonLine.dimensions = {
-        WIDTH: 600,
+        WIDTH: 740,
         HEIGHT: 300,
         YPOS: 0
     };
@@ -2505,7 +2608,7 @@ var TIME_LIMIT = 60000;
          * @param {number} pos Line position.
          * @param {number} increment
          */
-        updateXPos: function (pos, increment) {
+        updateXPos: function (pos, increment, deltaTime) {
             var line1 = pos;
             var line2 = pos == 0 ? 1 : 0;
 
@@ -2515,7 +2618,25 @@ var TIME_LIMIT = 60000;
             if (this.xPos[line1] <= -this.dimensions.WIDTH) {
                 this.xPos[line1] += this.dimensions.WIDTH * 2;
                 this.xPos[line2] = this.xPos[line1] - this.dimensions.WIDTH;
-                this.sourceXPos[line1] = this.getRandomType() + this.spritePos.x;
+
+                //Seta Cores Background
+
+                if(CONT == 0){
+                    this.sourceXPos[line1] = this.spritePos.x;
+                }else if(CONT <= 5){
+                    this.sourceXPos[line1] = 740 + this.spritePos.x;
+                }else if(CONT == 6){
+                    this.sourceXPos[line1] = 2220 + this.spritePos.x;
+                }else if(CONT <= 13){
+                    this.sourceXPos[line1] = 2960 + this.spritePos.x;
+                }else if(CONT == 14){
+                    this.sourceXPos[line1] = 4440 + this.spritePos.x;
+                }else{
+                    this.sourceXPos[line1] = 5180 + this.spritePos.x;
+                }
+
+                CONT += 1
+                
             }
         },
 
@@ -2528,9 +2649,10 @@ var TIME_LIMIT = 60000;
             var increment = Math.floor(speed * (FPS / 1000) * deltaTime);
 
             if (this.xPos[0] <= 0) {
-                this.updateXPos(0, increment);
+                this.updateXPos(0, increment, deltaTime);
             } else {
-                this.updateXPos(1, increment);
+                this.updateXPos(1, increment, deltaTime);
+
             }
             this.draw();
         },
