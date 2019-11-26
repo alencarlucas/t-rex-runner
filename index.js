@@ -120,17 +120,17 @@ CONT = 0;
         GRAVITY: 0.6,
         INITIAL_JUMP_VELOCITY: 20,
         INVERT_FADE_DURATION: 8000,
-        INVERT_DISTANCE: 60,
+        INVERT_DISTANCE: 65,
         MAX_BLINK_COUNT: 3,
         MAX_CLOUDS: 6,
         MAX_OBSTACLE_LENGTH: 3,
         MAX_OBSTACLE_DUPLICATION: 1,
-        MAX_SPEED: [14, 19, 24],
+        MAX_SPEED: [10, 16, 28],
         MIN_JUMP_HEIGHT: 35,
         MOBILE_SPEED_COEFFICIENT: 1.2,
         RESOURCE_TEMPLATE_ID: 'audio-resources',
-        SPEED: 10,
-        SPEED_DROP_COEFFICIENT: 3,
+        SPEED: 6,
+        SPEED_DROP_COEFFICIENT: 1,
         MAX_GAME_TIME: 60000,
         SPEED_INCREMENT_INTERVAL: [20000, 20000, 20000],
         CURRENT_SPEED_INDEX: 0,
@@ -2622,13 +2622,13 @@ CONT = 0;
                 //Seta Cores Background
                 if(CONT == 0){
                     this.sourceXPos[line1] = this.spritePos.x;
-                }else if(CONT <= 13){
+                }else if(CONT <= 8){
                     this.sourceXPos[line1] = 740 + this.spritePos.x;
-                }else if(CONT == 14){
+                }else if(CONT == 9){
                     this.sourceXPos[line1] = 2220 + this.spritePos.x;
-                }else if(CONT <= 29){
+                }else if(CONT <= 19){
                     this.sourceXPos[line1] = 2960 + this.spritePos.x;
-                }else if(CONT == 30){
+                }else if(CONT == 20){
                     this.sourceXPos[line1] = 4440 + this.spritePos.x;
                 }else{
                     this.sourceXPos[line1] = 5180 + this.spritePos.x;
