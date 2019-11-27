@@ -91,7 +91,7 @@ CONT = 0;
      * Frames per second.
      * @const
      */
-    var FPS = 45;
+    var FPS = 60;
 
     /** @const */
     var IS_HIDPI = window.devicePixelRatio > 1;
@@ -110,7 +110,7 @@ CONT = 0;
      * @enum {number}
      */
     Runner.config = {
-        ACCELERATION: 0.01,
+        ACCELERATION: 0.003,
         BG_CLOUD_SPEED: 0.2,
         BOTTOM_PAD: 10,
         CLEAR_TIME: 3000,
@@ -120,19 +120,19 @@ CONT = 0;
         GRAVITY: 0.6,
         INITIAL_JUMP_VELOCITY: 20,
         INVERT_FADE_DURATION: 8000,
-        INVERT_DISTANCE: 65,
+        INVERT_DISTANCE: 60,
         MAX_BLINK_COUNT: 3,
         MAX_CLOUDS: 6,
         MAX_OBSTACLE_LENGTH: 3,
         MAX_OBSTACLE_DUPLICATION: 1,
-        MAX_SPEED: [10, 16, 28],
+        MAX_SPEED: [7, 9, 12],
         MIN_JUMP_HEIGHT: 35,
         MOBILE_SPEED_COEFFICIENT: 1.2,
         RESOURCE_TEMPLATE_ID: 'audio-resources',
-        SPEED: 6,
-        SPEED_DROP_COEFFICIENT: 1,
+        SPEED: 5,
+        SPEED_DROP_COEFFICIENT: 3,
         MAX_GAME_TIME: 60000,
-        SPEED_INCREMENT_INTERVAL: [20000, 20000, 20000],
+        SPEED_INCREMENT_INTERVAL: [20000, 40000, 60000],
         CURRENT_SPEED_INDEX: 0,
         MAX_SPEED_INTERVALS: 3
     };
@@ -585,6 +585,11 @@ CONT = 0;
                 } else {
                     this.gameOver();
                 }
+
+                //console.log(this.currentSpeed)
+                //console.log(this.runningTime)
+                
+
 
                 var playAchievementSound = this.distanceMeter.update(deltaTime,
                     Math.ceil(this.distanceRan));
@@ -2620,15 +2625,18 @@ CONT = 0;
                 this.xPos[line2] = this.xPos[line1] - this.dimensions.WIDTH;
 
                 //Seta Cores Background
+
+                //console.log(CONT)
+
                 if(CONT == 0){
                     this.sourceXPos[line1] = this.spritePos.x;
-                }else if(CONT <= 8){
+                }else if(CONT <= 7){
                     this.sourceXPos[line1] = 740 + this.spritePos.x;
-                }else if(CONT == 9){
+                }else if(CONT == 8){
                     this.sourceXPos[line1] = 2220 + this.spritePos.x;
-                }else if(CONT <= 19){
+                }else if(CONT <= 20){
                     this.sourceXPos[line1] = 2960 + this.spritePos.x;
-                }else if(CONT == 20){
+                }else if(CONT == 21){
                     this.sourceXPos[line1] = 4440 + this.spritePos.x;
                 }else{
                     this.sourceXPos[line1] = 5180 + this.spritePos.x;
